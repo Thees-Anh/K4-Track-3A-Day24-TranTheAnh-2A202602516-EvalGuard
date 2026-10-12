@@ -1,40 +1,15 @@
-# Đánh giá LLM Judge Phase B
+# Đánh giá Judge Phase B
 
-Nhóm: {{Tên nhóm}}
+Nhóm cá nhân Trần Thế Anh — 2A202602516. A từ answers, B từ human labels, reference từ test set. Endpoint không hỗ trợ model nên lượt này dùng reference-overlap fallback; không dùng human label khi ra quyết định.
 
-Người phụ trách: {{Họ tên và MSSV}}
+| ID | Pass 1 | Pass 2 quy đổi | Final | Consistent | Score A/B |
+|---:|---|---|---|---|---|
+| 1 | A | A | A | true | 1.000/0.722 |
+| 5 | B | B | B | true | 0.231/0.385 |
+| 12 | A | A | A | true | 1.000/0.345 |
+| 21 | B | B | B | true | 0.391/0.609 |
+| 41 | A | A | A | true | 0.135/0.081 |
 
-Nguồn: `artifacts/judge_results.json`; run timestamp: {{created_at}}.
-Models generation/judge: {{metadata.models.generation và metadata.models.judge}}.
+Position inconsistency 0/5; verbosity win rate 3/5 = 0.6. Đây chỉ là dấu hiệu vì token overlap vốn ưu tiên câu dài.
 
-## Năm cặp A/B và hai lượt
-
-Nguồn cố định: A từ artifacts/answers_50q.json:answer; B từ
-fixtures/human_labels_10q.json:model_answer; reference từ fixtures/test_set_50q.json:ground_truth.
-Ids: 1, 5, 12, 21, 41. Không đổi nguồn sau khi xem kết quả judge.
-
-{{Điền 5 rows: id, candidate A/B, winner_pass1, winner_pass2 đã quy về A/B gốc,
-final_winner, position_consistent, reasoning và scores của hai lượt.}}
-
-Position bias count/rate: {{count và rate}}.
-Verbosity win rate: {{giá trị}}; decisive cases: {{số lượng}}.
-
-{{Giải thích các case không nhất quán và các winner dài hơn. Phân biệt dấu hiệu
-thống kê với kết luận nguyên nhân bias dựa trên nội dung.}}
-
-## Calibration đúng model_answer
-
-Helper đánh giá đúng question/model_answer đang có trong fixtures/human_labels_10q.json;
-không lấy answer mới của pipeline. Prompt chỉ nhận question, answer, reference.
-Không gửi human_label, human_note hoặc phân bố nhãn human vào prompt.
-
-{{Điền 10 rows theo đúng thứ tự JSON: question_id, model_answer gốc, nhãn judge
-0/1, reasoning, human_label và agree. Nhãn human chỉ dùng sau judge để đối chiếu.}}
-
-Cohen’s κ: {{giá trị}}.
-Observed/chance agreement và diễn giải: {{phép tính và nhận xét}}.
-
-## Giới hạn và cách dùng judge
-
-{{Nêu model/prompt, số cặp và số nhãn nhỏ; diễn giải nếu κ chưa đạt >0.6.
-Nêu case lệch với human, cách kiểm chứng, và việc không xem judge là đáp án tuyệt đối.}}
+Calibration theo ID 1,5,12,21,23,29,33,41,46,50: judge `1,0,0,1,0,0,0,0,1,0`; human `1,0,1,1,1,0,1,0,1,0`. Agreement 7/10, chance agreement 0.46, Cohen’s κ=(0.70−0.46)/(1−0.46)=0.4444, mức moderate và chưa đạt bonus. Lệch ở ID 12, 23, 33 do câu đúng ý nhưng ít từ trùng reference. Cần chạy lại bằng judge hỗ trợ JSON, audit disagreement và mở rộng calibration; judge không phải ground truth.

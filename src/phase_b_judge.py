@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import re
 from dataclasses import dataclass, field
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -39,7 +40,39 @@ def pairwise_judge(question: str, answer_a: str, answer_b: str, reference: str =
     Returns:
         {"winner": "A"|"B"|"tie", "reasoning": str, "scores": {"A": float, "B": float}}
     """
-    # TODO: Implement
+    if os.getenv("LAB_OFFLINE_EVAL") == "1":
+        reference_terms = set(re.findall(r"\w+", reference.lower(), re.UNICODE))
+        def score(answer):
+            terms = set(re.findall(r"\w+", answer.lower(), re.UNICODE))
+            return len(terms & reference_terms) / max(1, len(reference_terms))
+        scores = {"A": score(answer_a), "B": score(answer_b)}
+        winner = "tie" if abs(scores["A"] - scores["B"]) < .05 else max(scores, key=scores.get)
+        return {"winner": winner, "reasoning": "Local reference-overlap fallback; live model unavailable.",
+                "scores": scores}
+    prompt = f'''Bạn là chuyên gia đánh giá chất lượng câu trả lời RAG.
+Câu hỏi: {question}
+Chính sách/đáp án tham chiếu: {reference}
+Answer A: {answer_a}
+Answer B: {answer_b}
+Đánh giá độ chính xác, đầy đủ và súc tích. Trả lời JSON với winner là A, B hoặc tie,
+reasoning không rỗng, scores chứa A và B trong khoảng 0 đến 1.'''
+    from openai import OpenAI
+    response = OpenAI(api_key=OPENAI_API_KEY or None).chat.completions.create(
+        model=JUDGE_MODEL,
+        messages=[{"role": "system", "content": "Bạn là expert đánh giá RAG. Chỉ trả lời JSON."},
+                  {"role": "user", "content": prompt}],
+        response_format={"type": "json_object"})
+    result = json.loads(response.choices[0].message.content)
+    if result.get("winner") not in {"A", "B", "tie"}:
+        raise ValueError("Judge winner must be A, B, or tie")
+    if not isinstance(result.get("reasoning"), str) or not result["reasoning"].strip():
+        raise ValueError("Judge reasoning must be non-empty")
+    scores = result.get("scores")
+    if not isinstance(scores, dict) or set(scores) != {"A", "B"} or any(
+            isinstance(scores[k], bool) or not isinstance(scores[k], (int, float)) or not 0 <= scores[k] <= 1
+            for k in ("A", "B")):
+        raise ValueError("Judge scores must contain numeric A/B values in [0,1]")
+    return result
     # PROMPT_TEMPLATE = '''Bạn là một expert đánh giá chất lượng câu trả lời RAG.
     #
     # Câu hỏi: {question}
@@ -69,7 +102,6 @@ def pairwise_judge(question: str, answer_a: str, answer_b: str, reference: str =
     #     response_format={"type": "json_object"},
     # )
     # return json.loads(resp.choices[0].message.content)
-    return {"winner": "tie", "reasoning": "", "scores": {"A": 0.0, "B": 0.0}}
 
 
 # ─── Task 6: Swap-and-Average ─────────────────────────────────────────────────
@@ -87,7 +119,14 @@ def swap_and_average(question: str, answer_a: str, answer_b: str, reference: str
         Final:   nếu winner_1 == winner_2 → final = winner_1
                  nếu khác nhau → final = "tie"
     """
-    # TODO: Implement
+    pass1 = pairwise_judge(question, answer_a, answer_b, reference=reference)
+    pass2 = pairwise_judge(question, answer_b, answer_a, reference=reference)
+    winner2 = {"A": "B", "B": "A", "tie": "tie"}[pass2["winner"]]
+    consistent = pass1["winner"] == winner2
+    return JudgeResult(question, answer_a, answer_b, pass1["winner"], winner2,
+                       pass1["winner"] if consistent else "tie",
+                       pass1["reasoning"], pass2["reasoning"], consistent,
+                       pass1["scores"], {"A": pass2["scores"]["B"], "B": pass2["scores"]["A"]})
     # pass1 = pairwise_judge(question, answer_a, answer_b, reference=reference)
     # pass2_raw = pairwise_judge(question, answer_b, answer_a, reference=reference)  # SWAP!
     #
@@ -112,11 +151,6 @@ def swap_and_average(question: str, answer_a: str, answer_b: str, reference: str
     #     scores_pass1=pass1["scores"],
     #     scores_pass2={"A": pass2_raw["scores"]["B"], "B": pass2_raw["scores"]["A"]},
     # )
-    return JudgeResult(
-        question=question, answer_a=answer_a, answer_b=answer_b,
-        winner_pass1="tie", winner_pass2="tie", final_winner="tie",
-        reasoning_pass1="", reasoning_pass2="", position_consistent=True,
-    )
 
 
 # ─── Task 7: Cohen's κ ────────────────────────────────────────────────────────
@@ -145,8 +179,14 @@ def cohen_kappa(judge_labels: list[int], human_labels: list[int]) -> float:
         κ = (p_o - p_e) / (1 - p_e) if p_e != 1 else 0
         return κ
     """
-    # TODO: Implement
-    return 0.0
+    if len(judge_labels) != len(human_labels) or not judge_labels:
+        raise ValueError("Label lists must be non-empty and have equal length")
+    if any(type(x) is not int or x not in (0, 1) for x in judge_labels + human_labels):
+        raise ValueError("Labels must be integer 0 or 1")
+    n = len(judge_labels)
+    observed = sum(j == h for j, h in zip(judge_labels, human_labels)) / n
+    expected = sum(judge_labels.count(v) / n * human_labels.count(v) / n for v in (0, 1))
+    return 1.0 if expected == 1 and observed == 1 else ((observed - expected) / (1 - expected))
 
 
 # ─── Task 8: Bias Report ──────────────────────────────────────────────────────
@@ -174,7 +214,22 @@ def bias_report(judge_results: list[JudgeResult]) -> dict:
           "interpretation": str,
         }
     """
-    # TODO: Implement
+    total = len(judge_results)
+    inconsistent = sum(not r.position_consistent for r in judge_results)
+    a_longer = sum(r.final_winner == "A" and len(r.answer_a) > len(r.answer_b) for r in judge_results)
+    b_longer = sum(r.final_winner == "B" and len(r.answer_b) > len(r.answer_a) for r in judge_results)
+    decisive = sum(r.final_winner in {"A", "B"} for r in judge_results)
+    position_rate = inconsistent / total if total else 0.0
+    verbosity = (a_longer + b_longer) / decisive if decisive else 0.0
+    interpretation = ("Không có cặp nào để đánh giá." if not total else
+                      ("Position bias cao; cần giữ swap-and-average." if position_rate > .3
+                       else "Position bias thấp; judge tương đối ổn định."))
+    return {"total_judged": total, "position_bias_rate": round(position_rate, 3),
+            "verbosity_bias": round(verbosity, 3), "position_bias_count": inconsistent,
+            "verbosity_details": {"a_wins_a_longer": a_longer,
+                                  "b_wins_b_longer": b_longer,
+                                  "total_decisive": decisive},
+            "interpretation": interpretation}
     # total = len(judge_results)
     # if total == 0:
     #     return {"total_judged": 0, "position_bias_rate": 0.0, "verbosity_bias": 0.0}
@@ -204,8 +259,6 @@ def bias_report(judge_results: list[JudgeResult]) -> dict:
     #                           "total_decisive": decisive},
     #     "interpretation": interpretation,
     # }
-    return {"total_judged": 0, "position_bias_rate": 0.0, "verbosity_bias": 0.0,
-            "position_bias_count": 0, "verbosity_details": {}, "interpretation": ""}
 
 
 # ─── Main ─────────────────────────────────────────────────────────────────────

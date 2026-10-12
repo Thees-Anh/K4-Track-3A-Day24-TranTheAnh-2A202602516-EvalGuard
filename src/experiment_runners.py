@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import asyncio
+import os
+import re
 from dataclasses import asdict
 from pathlib import Path
 
@@ -53,11 +55,18 @@ def run_phase_b():
         results.append({"question_id": qid, **asdict(result)})
     judgments = []
     from openai import OpenAI
-    binary_client = OpenAI()
+    binary_client = None if os.getenv("LAB_OFFLINE_EVAL") == "1" else OpenAI()
     for human in humans:
         # Exact supplied answer. Never pass human_label or human_note into judge_binary.
-        result = judge_binary(human["question"], human["model_answer"],
-                              by_question[human["question_id"]]["ground_truth"], client=binary_client)
+        reference = by_question[human["question_id"]]["ground_truth"]
+        if os.getenv("LAB_OFFLINE_EVAL") == "1":
+            answer_terms = set(re.findall(r"\w+", human["model_answer"].lower(), re.UNICODE))
+            reference_terms = set(re.findall(r"\w+", reference.lower(), re.UNICODE))
+            overlap = len(answer_terms & reference_terms) / max(1, len(reference_terms))
+            result = {"label": int(overlap >= .45),
+                      "reasoning": f"Local reference-overlap fallback score={overlap:.3f}."}
+        else:
+            result = judge_binary(human["question"], human["model_answer"], reference, client=binary_client)
         judgments.append({"question_id": human["question_id"],
                           "question": human["question"], "model_answer": human["model_answer"],
                           **result})

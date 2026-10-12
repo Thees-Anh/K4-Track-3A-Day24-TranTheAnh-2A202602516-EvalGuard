@@ -1,60 +1,20 @@
 # Blueprint CI/CD cho RAG và guardrails
 
-Nhóm: {{Tên nhóm}}
+Nhóm cá nhân Trần Thế Anh — 2A202602516. Đây là đề xuất, chưa phải workflow production. Run dùng extractive/lexical/judge fallback và guard `local-policy-rails-v1` do endpoint/full NeMo không khả dụng.
 
-Người phụ trách: {{Họ tên và MSSV}}
+Input → PII scan → input rail → retrieval/rerank → generation → output rail → response. PII được redact trong log; request block không vào RAG; secrets chỉ ở `.env`. LLM lỗi chỉ cho extractive fallback có metadata rõ ràng.
 
-Đây là **đề xuất CI/CD**, không phải workflow đã được triển khai/chạy.
-Nguồn kết quả: artifacts/ragas_50q.json, judge_results.json, guard_results.json.
-Run timestamp: {{created_at}}; guard models: {{metadata.models.guard}}.
-Models generation/evaluator/judge từ A/B: {{models theo từng vai trò và nguồn report}}.
+| Layer | P50 ms | P95 ms | P99 ms | Trạng thái |
+|---|---:|---:|---:|---|
+| PII scan | 0.0104 | 0.0122 | 0.0127 | local fallback |
+| Input rail | 0.0047 | 0.0058 | 0.0067 | local fallback |
+| Input sequential | 0.0155 | 0.0176 | 0.0183 | dưới 500ms |
+| RAG | chưa đo | chưa đo | chưa đo | ngoài phạm vi |
+| Output rail | chưa đo | chưa đo | chưa đo | ngoài phạm vi |
+| Full request | chưa đo | chưa đo | chưa đo | không suy diễn |
 
-## Kiến trúc và failure action
+Phép đo có 2 warm-up, 20 mẫu, percentile linear. Số này không đại diện NeMo/LLM network; cần benchmark lại ≥100 mẫu production.
 
-Input → Presidio → NeMo input → RAG → NeMo output → response.
-Request thực dừng sớm khi bị chặn; khác phép đo input layers chạy đủ hai tầng.
+CI đề xuất chạy pytest rồi experiments staging và trả nonzero nếu avg RAGAS <0.65, faithfulness <0.75, attacks <18/20, clean <8/8, output <4/4 hoặc full P95 ≥500ms. Artifact phải qua schema/hash/model-ID. Mốc lab vẫn 15/20.
 
-{{Mô tả data flow, failure action, log/redact, nơi giữ secrets và điều kiện fallback.}}
-
-## Phạm vi và số đo latency
-
-Bắt buộc Task 12: **input_layers_sequential**, Presidio + NeMo input, không
-short-circuit. Engines tạo trước đo; có hai warm-up thật không tính vào mẫu.
-Percentile nội suy tuyến tính từ raw samples; tổng từ tổng từng sample.
-
-Số mẫu timed: {{n_samples}}; warm-up: {{warmup_runs}};
-phương pháp: {{percentile_method}}.
-
-| Layer / scope | P50 ms | P95 ms | P99 ms | Tình trạng |
-|---|---|---|---|---|
-| Presidio | {{p50}} | {{p95}} | {{p99}} | {{Kết quả đo Task 12}} |
-| NeMo input | {{p50}} | {{p95}} | {{p99}} | {{Kết quả đo Task 12}} |
-| Input guard sequential | {{p50}} | {{p95}} | {{p99}} | {{Kết quả đo Task 12}} |
-| RAG | chưa đo | chưa đo | chưa đo | Ngoài phạm vi bắt buộc |
-| NeMo output | chưa đo | chưa đo | chưa đo | Ngoài phạm vi bắt buộc |
-| Full guard / short-circuit request | chưa đo | chưa đo | chưa đo | Không suy từ input_guard_ms |
-
-Input-layer budget target: 500ms; kết quả thực tế/budget_ok: {{giá trị và bool}}.
-{{Nêu bottleneck nếu vượt target. Nếu chưa đo các phần ngoài phạm vi, giữ “chưa đo”
-và nêu kế hoạch lấy mẫu/warm-up/timestamps; nếu đã đo thì thay bằng số và phương pháp.}}
-
-## CI gates đề xuất
-
-- RAGAS faithfulness ≥0.75, avg_score ≥0.65 trên 50 câu.
-- Attacks ≥18/20 cho CI đề xuất; clean 8/8 allowed; output cases đúng.
-- Full guard P95 <500ms chỉ áp dụng sau khi thực sự đo full guard.
-
-Mốc bắt buộc lab vẫn attacks ≥15/20; bonus ≥18/20 kèm clean controls đạt.
-{{Đề xuất lệnh job và cách script trả nonzero khi không đạt. MIN_* là biến đề
-xuất, không tự làm quality gate nếu runner chưa kiểm tra ngưỡng. Ghi rõ workflow
-chưa triển khai, hoặc dẫn bằng chứng nếu nhóm thực sự đã triển khai.}}
-
-## Monitoring và cải tiến
-
-{{Nêu metric, ngưỡng cảnh báo, cách lấy samples, xử lý false positives, drift,
-privacy và người xử lý. Dùng kết quả thật và ghi giới hạn của bộ 50/20/8/4.}}
-
-RAGAS mean/worst distribution: {{giá trị}}.
-Cohen’s κ: {{giá trị}}.
-Attacks passed: {{số lượng}}/20; clean false_positive_rate: {{giá trị}}.
-{{Nêu 3–5 câu cải tiến có thể kiểm tra, gắn với bằng chứng của nhóm.}}
+Run hiện có factual/multi/adversarial mean 0.6983/0.6369/0.6226; κ=0.4444; attacks 20/20, clean false-positive 0, output 4/4. Theo dõi rolling quality, refusal/FPR, PII counts đã băm, latency và drift; cảnh báo FPR >1%, attack pass <90% hoặc adversarial mean giảm >0.05. Ưu tiên metadata version, semantic reranker, judge calibration lớn hơn và replay bằng NeMo sau khi sửa endpoint.

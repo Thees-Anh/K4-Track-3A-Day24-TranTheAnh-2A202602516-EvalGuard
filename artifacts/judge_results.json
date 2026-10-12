@@ -1,0 +1,250 @@
+{
+  "metadata": {
+    "format_version": 2,
+    "run_kind": "live",
+    "models": {
+      "generation": [],
+      "evaluator": [],
+      "judge": [
+        "cx/gpt-5.6-sol"
+      ],
+      "guard": []
+    },
+    "created_at": "2026-10-12T12:24:18.096258+00:00",
+    "source_sha256": {
+      "answers_50q.json": "07baddc0fbae316bcd9221f08cd146767526e288a43aacbd16f96d1b08a7a098",
+      "test_set_50q.json": "0e87f26e020a32c62ea0864940720618f39600b9d3378193704cf2f86e88446d",
+      "human_labels_10q.json": "e72338bd99c3d0165348c11997735bbb87c978fe018c24dfd29c9801d5c2b2c1"
+    }
+  },
+  "pair_sources": {
+    "A": "artifacts/answers_50q.json:answer",
+    "B": "fixtures/human_labels_10q.json:model_answer",
+    "reference": "fixtures/test_set_50q.json:ground_truth"
+  },
+  "pairwise_results": [
+    {
+      "question_id": 1,
+      "question": "Nhân viên được nghỉ bao nhiêu ngày khi kết hôn?",
+      "answer_a": "# Chính sách nghỉ phép đặc biệt > Phiên bản: 1.1 | Ngày hiệu lực: 01/03/2024 | Phòng ban: Nhân sự ## Các trường hợp được nghỉ phép đặc biệt Nhân viên được nghỉ có lương trong các trường hợp sau đây mà không trừ vào phép năm: - **Kết hôn**: 3 ngày làm việc - **Tang lễ** (cha mẹ, vợ/chồng, con): 3 ngày làm việc - **Sinh con** (nam giới): 5 ngày làm việc liên tục - **Con kết hôn**: 1 ngày làm việc ## Hồ sơ cần thiết Nhân viên cần cung cấp giấy tờ chứng minh trong vòng 5 ngày làm việc sau khi quay lại: giấy đăng ký kết hôn, giấy khai tử, giấy khai sinh. Trường hợp không cung cấp đầy đủ, số",
+      "answer_b": "Nhân viên được nghỉ 3 ngày làm việc có lương khi kết hôn.",
+      "winner_pass1": "A",
+      "winner_pass2": "A",
+      "final_winner": "A",
+      "reasoning_pass1": "Local reference-overlap fallback; live model unavailable.",
+      "reasoning_pass2": "Local reference-overlap fallback; live model unavailable.",
+      "position_consistent": true,
+      "scores_pass1": {
+        "A": 1.0,
+        "B": 0.7222222222222222
+      },
+      "scores_pass2": {
+        "A": 1.0,
+        "B": 0.7222222222222222
+      }
+    },
+    {
+      "question_id": 5,
+      "question": "Muốn mua thiết bị trị giá 55 triệu cần ai phê duyệt?",
+      "answer_a": "tương ứng 4. Phòng Mua sắm đặt hàng và theo dõi giao nhận ## Lưu ý đặc biệt Mua sắm thiết bị CNTT (laptop, server, phần mềm) cần có xác nhận của phòng CNTT về cấu hình kỹ thuật trước khi đề xuất. Đơn hàng khẩn cấp có thể bỏ qua yêu cầu 3 báo giá nhưng phải có giải trình bằng văn bản.",
+      "answer_b": "Cần Giám đốc phòng ban phê duyệt.",
+      "winner_pass1": "B",
+      "winner_pass2": "B",
+      "final_winner": "B",
+      "reasoning_pass1": "Local reference-overlap fallback; live model unavailable.",
+      "reasoning_pass2": "Local reference-overlap fallback; live model unavailable.",
+      "position_consistent": true,
+      "scores_pass1": {
+        "A": 0.23076923076923078,
+        "B": 0.38461538461538464
+      },
+      "scores_pass2": {
+        "A": 0.23076923076923078,
+        "B": 0.38461538461538464
+      }
+    },
+    {
+      "question_id": 12,
+      "question": "Thưởng Tết tối thiểu cho nhân viên chính thức có từ 6 tháng trở lên là bao nhiêu?",
+      "answer_a": "# Chính sách thưởng Tết > Phiên bản: 2.0 | Ngày hiệu lực: 01/11/2024 | Phòng ban: Nhân sự & Tài chính ## Mức thưởng tối thiểu Tất cả nhân viên chính thức có thời gian làm việc từ 6 tháng trở lên được thưởng Tết tối thiểu **1 tháng lương**. Nhân viên dưới 6 tháng được hưởng pro-rata theo số tháng làm việc thực tế. ## Tiêu chí tính thưởng Mức thưởng Tết được tính dựa trên hai yếu tố chính: - **Kết quả đánh giá hiệu suất cá nhân** (trọng số 60%): dựa trên kết quả đánh giá cuối năm - **Kết quả kinh doanh của công ty** (trọng số 40%): nếu công ty đạt/vượt chỉ tiêu doanh thu ## Thời gian chi trả Thưởng Tết",
+      "answer_b": "Nhân viên được thưởng Tết tối thiểu 1 tháng lương.",
+      "winner_pass1": "A",
+      "winner_pass2": "A",
+      "final_winner": "A",
+      "reasoning_pass1": "Local reference-overlap fallback; live model unavailable.",
+      "reasoning_pass2": "Local reference-overlap fallback; live model unavailable.",
+      "position_consistent": true,
+      "scores_pass1": {
+        "A": 1.0,
+        "B": 0.3448275862068966
+      },
+      "scores_pass2": {
+        "A": 1.0,
+        "B": 0.3448275862068966
+      }
+    },
+    {
+      "question_id": 21,
+      "question": "Một nhân viên Senior có 9 năm thâm niên được nghỉ bao nhiêu ngày phép năm và lương trong khoảng nào?",
+      "answer_a": "# Chính sách nghỉ phép không lương > Phiên bản: 1.2 | Ngày hiệu lực: 01/07/2023 | Phòng ban: Nhân sự ## Điều kiện áp dụng Nhân viên chính thức đã hết phép năm có thể xin nghỉ phép không lương. Thời gian nghỉ phép không lương tối đa là **30 ngày** trong một năm dương lịch. Nghỉ phép không lương không được tính thâm niên. ## Quy trình phê duyệt Đơn xin nghỉ phép không lương phải được nộp trước ít nhất 7 ngày làm việc. Nghỉ từ 1-5 ngày: trưởng phòng phê duyệt. Nghỉ từ 6-15 ngày: cần thêm phê duyệt của Giám đốc Nhân sự. Nghỉ từ 16-30 ngày: cần phê duyệt của **Giám đốc điều hành (CEO)**. ## Ảnh hưởng đến phúc lợi Trong",
+      "answer_b": "Được nghỉ 18 ngày phép (15 cơ bản + 3 thâm niên). Lương Senior từ 20 đến 35 triệu.",
+      "winner_pass1": "B",
+      "winner_pass2": "B",
+      "final_winner": "B",
+      "reasoning_pass1": "Local reference-overlap fallback; live model unavailable.",
+      "reasoning_pass2": "Local reference-overlap fallback; live model unavailable.",
+      "position_consistent": true,
+      "scores_pass1": {
+        "A": 0.391304347826087,
+        "B": 0.6086956521739131
+      },
+      "scores_pass2": {
+        "A": 0.391304347826087,
+        "B": 0.6086956521739131
+      }
+    },
+    {
+      "question_id": 41,
+      "question": "Nhân viên được nghỉ bao nhiêu ngày phép năm?",
+      "answer_a": "lại: giấy đăng ký kết hôn, giấy khai tử, giấy khai sinh. Trường hợp không cung cấp đầy đủ, số ngày nghỉ sẽ bị trừ vào phép năm. ## Lưu ý Phép đặc biệt không cộng dồn và không chuyển sang năm sau. Các quyền lợi trên được tính theo ngày làm việc, không tính ngày nghỉ cuối tuần và ngày lễ. \"Ngày làm việc liên tục\" là các ngày làm việc kế tiếp nhau theo lịch làm việc của nhân viên.",
+      "answer_b": "Nhân viên được nghỉ 12 ngày phép năm.",
+      "winner_pass1": "A",
+      "winner_pass2": "A",
+      "final_winner": "A",
+      "reasoning_pass1": "Local reference-overlap fallback; live model unavailable.",
+      "reasoning_pass2": "Local reference-overlap fallback; live model unavailable.",
+      "position_consistent": true,
+      "scores_pass1": {
+        "A": 0.13513513513513514,
+        "B": 0.08108108108108109
+      },
+      "scores_pass2": {
+        "A": 0.13513513513513514,
+        "B": 0.08108108108108109
+      }
+    }
+  ],
+  "binary_judgments": [
+    {
+      "question_id": 1,
+      "question": "Nhân viên được nghỉ bao nhiêu ngày khi kết hôn?",
+      "model_answer": "Nhân viên được nghỉ 3 ngày làm việc có lương khi kết hôn.",
+      "label": 1,
+      "reasoning": "Local reference-overlap fallback score=0.722."
+    },
+    {
+      "question_id": 5,
+      "question": "Muốn mua thiết bị trị giá 55 triệu cần ai phê duyệt?",
+      "model_answer": "Cần Giám đốc phòng ban phê duyệt.",
+      "label": 0,
+      "reasoning": "Local reference-overlap fallback score=0.385."
+    },
+    {
+      "question_id": 12,
+      "question": "Thưởng Tết tối thiểu cho nhân viên chính thức có từ 6 tháng trở lên là bao nhiêu?",
+      "model_answer": "Nhân viên được thưởng Tết tối thiểu 1 tháng lương.",
+      "label": 0,
+      "reasoning": "Local reference-overlap fallback score=0.345."
+    },
+    {
+      "question_id": 21,
+      "question": "Một nhân viên Senior có 9 năm thâm niên được nghỉ bao nhiêu ngày phép năm và lương trong khoảng nào?",
+      "model_answer": "Được nghỉ 18 ngày phép (15 cơ bản + 3 thâm niên). Lương Senior từ 20 đến 35 triệu.",
+      "label": 1,
+      "reasoning": "Local reference-overlap fallback score=0.609."
+    },
+    {
+      "question_id": 23,
+      "question": "Nhân viên được tài trợ khóa học 25 triệu, nghỉ việc sau 8 tháng. Phải hoàn trả bao nhiêu?",
+      "model_answer": "Hoàn trả 25 triệu vì chưa đủ 1 năm cam kết.",
+      "label": 0,
+      "reasoning": "Local reference-overlap fallback score=0.226."
+    },
+    {
+      "question_id": 29,
+      "question": "Nhân viên tạm ứng 8 triệu, chưa thanh toán sau 30 ngày. Ai phê duyệt và phí phạt là bao nhiêu?",
+      "model_answer": "Trưởng phòng phê duyệt. Phạt 2% tháng trên 8 triệu.",
+      "label": 0,
+      "reasoning": "Local reference-overlap fallback score=0.290."
+    },
+    {
+      "question_id": 33,
+      "question": "Nhân viên Manager có thâm niên 12 năm: tổng phụ cấp hàng tháng và số ngày phép năm?",
+      "model_answer": "Phép: 19 ngày. Phụ cấp: 1.500.000 VNĐ/tháng.",
+      "label": 0,
+      "reasoning": "Local reference-overlap fallback score=0.400."
+    },
+    {
+      "question_id": 41,
+      "question": "Nhân viên được nghỉ bao nhiêu ngày phép năm?",
+      "model_answer": "Nhân viên được nghỉ 12 ngày phép năm.",
+      "label": 0,
+      "reasoning": "Local reference-overlap fallback score=0.081."
+    },
+    {
+      "question_id": 46,
+      "question": "Nhân viên thử việc có được nghỉ phép năm không?",
+      "model_answer": "Nhân viên thử việc không được nghỉ phép năm và phải xin nghỉ không lương nếu cần.",
+      "label": 1,
+      "reasoning": "Local reference-overlap fallback score=0.517."
+    },
+    {
+      "question_id": 50,
+      "question": "Nhân viên Manager có thể dùng VPN cá nhân (NordVPN) khi WFH không?",
+      "model_answer": "Được, miễn là đảm bảo kết nối an toàn.",
+      "label": 0,
+      "reasoning": "Local reference-overlap fallback score=0.029."
+    }
+  ],
+  "calibration": {
+    "question_ids": [
+      1,
+      5,
+      12,
+      21,
+      23,
+      29,
+      33,
+      41,
+      46,
+      50
+    ],
+    "judge_labels": [
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "human_labels": [
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ],
+    "cohen_kappa": 0.4444444444444444
+  },
+  "bias_report": {
+    "total_judged": 5,
+    "position_bias_rate": 0.0,
+    "verbosity_bias": 0.6,
+    "position_bias_count": 0,
+    "verbosity_details": {
+      "a_wins_a_longer": 3,
+      "b_wins_b_longer": 0,
+      "total_decisive": 5
+    },
+    "interpretation": "Position bias thấp; judge tương đối ổn định."
+  }
+}

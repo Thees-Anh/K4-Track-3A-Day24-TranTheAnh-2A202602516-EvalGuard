@@ -1,50 +1,22 @@
 # Nhóm thực hiện K4 Track 3A
 
-Tên nhóm: {{Tên nhóm}}
+Tên nhóm: Cá nhân Trần Thế Anh. Repo: https://github.com/Thees-Anh/K4-Track-3A-Day24-TranTheAnh-2A202602516-EvalGuard. Người nộp: Trần Thế Anh — 2A202602516. Ngày lab: 12/10/2026 UTC+07. Commit nền: `b9f8d5b`; commit hoàn thiện bài lab được ghi trong lịch sử Git của repo.
 
-Repo chung: {{Link repo}}
+| STT | Họ tên | MSSV | Công việc | Bằng chứng |
+|---:|---|---|---|---|
+| 1 | Trần Thế Anh | 2A202602516 | Toàn bộ m1–m5, A/B/C, artifacts, reports | `src/`, `artifacts/`, `doc/reports/` |
 
-Trưởng nhóm/người nộp: {{Họ tên và MSSV}}
-
-Ngày lab/deadline áp dụng: {{Ngày giờ theo thông báo lớp}} — Asia/Ho_Chi_Minh (UTC+07:00)
-
-Commit dùng để chấm: {{Commit SHA}}
-
-Mỗi nhóm nộp một repo. Điền đủ thành viên và một mục INDIVIDUAL cho từng người.
-Thêm/xóa rows để khớp nhóm thật; mẫu ba rows không ép nhóm phải có ba người.
-
-## Thành viên và phân công
-
-| STT | Họ và tên | MSSV | Vai trò / công việc thật | Bằng chứng |
-|---|---|---|---|---|
-| 1 | {{Họ tên}} | {{MSSV}} | {{Phase/file/hàm}} | {{Commit/PR/report}} |
-| 2 | {{Họ tên}} | {{MSSV}} | {{Phase/file/hàm}} | {{Commit/PR/report}} |
-| 3 | {{Họ tên}} | {{MSSV}} | {{Phase/file/hàm}} | {{Commit/PR/report}} |
-
-Người tích hợp/chạy batch/nộp link: {{Họ tên, công việc và bằng chứng}}.
-
-## Môi trường và chuẩn bị trước lớp
-
-OS/Python/compiler: {{Phiên bản thực tế}}.
-Virtualenv/dependencies/imports: {{Lệnh và kết quả}}.
-Models/Qdrant/50 answers đã chuẩn bị: {{Bằng chứng và giới hạn/fallback}}.
-Nếu cài full NeMo chưa thành công, ghi lỗi thực tế; không dùng unit test pass
-hoặc pip resolve để khẳng định runtime đã chạy.
+Windows, CPython 3.11.15 trong `.labvenv`. Pytest: 86 passed, 3 deselected. Pipeline index 52 chunks và sinh đủ 50 answers. Endpoint từ chối `cx/gpt-5.6-sol`; generation/evaluator/judge và guard dùng fallback được ghi rõ, chưa tuyên bố full NeMo chạy.
 
 ## INDIVIDUAL
 
-Sao chép mẫu cho mỗi thành viên; tiêu đề họ tên không dấu-MSSV.
+### TranTheAnh-2A202602516
 
-### {{HoVaTen}}-{{MSSV}}
+- Thực hiện chunk/search/rerank/enrichment/evaluator, Tasks 1–12 và blueprint.
+- Bằng chứng: bốn artifact JSON, ba report và unit tests.
+- Kiểm tra bằng pytest, ba runner và checker.
+- Học về metric retrieval/generation, swap judge, Cohen κ, clean control và latency scope.
+- Giới hạn endpoint/full NeMo được công khai bằng model IDs và report.
+- AI hỗ trợ viết mã; kết quả tự kiểm bằng tests, schema và raw artifacts.
 
-- Phần được giao và phần thực tế đã làm: {{Nhiệm vụ, file/hàm, mục đích}}.
-- Bằng chứng: {{Commit/PR và artifacts/reports liên quan}}.
-- Cách kiểm tra: {{Unit mock hoặc live experiment, lệnh và kết quả}}.
-- Điều đã học: {{Khái niệm và cách thể hiện trong bài}}.
-- Giới hạn/cách xử lý: {{Vấn đề và kiểm chứng}}.
-- Nguồn/AI hỗ trợ nếu có: {{Công cụ, phạm vi, cách tự kiểm chứng}}.
-
-## Cập nhật sau khi nộp
-
-{{Ghi phiên bản nộp; nếu sửa sau deadline, ghi commit/thời điểm/lý do và thông báo
-coach cho phép áp dụng bản cập nhật. Nếu không có cập nhật, ghi rõ không có.}}
+Không có cập nhật sau deadline.
